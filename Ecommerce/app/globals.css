@@ -1,0 +1,402 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Sistema morado Criscom (port criscom-ecom-home). El cyan queda fuera del chrome y del home. */
+  --background: #F8FAFC;
+  --foreground: #020817;
+  --card: #FFFFFF;
+  --card-foreground: #020817;
+  --popover: #FFFFFF;
+  --popover-foreground: #020817;
+  --main-bg: #F8FAFC;
+
+  /* Marca: nucleo #4B2281, vivo #743AB4, tinta #2F115C */
+  --primary: #4B2281;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #451B65;
+  --primary-soft: rgba(75, 34, 129, 0.10);
+  --secondary: #743AB4;
+  --secondary-foreground: #FFFFFF;
+
+  --muted: #F1F5F9;
+  --muted-foreground: #556377;
+  --accent: #F1F5F9;
+  --accent-foreground: #020817;
+  --destructive: #C52020;
+  --destructive-foreground: #FFFFFF;
+  --destructive-text: #B81E1E;
+  --success-text: #116A49;
+  --warning-text: #7F4205;
+  --border: #E2E8F0;
+  --border-strong: #C6CFDD;
+  --input: #E2E8F0;
+  --ring: #4B2281;
+  --ink: #2F115C;
+  --on-ink: #FFFFFF;
+  --on-ink-soft: #E2D4ED;
+  --wa: #25D366;
+  --wa-hover: #1FB856;
+  --wa-ink: #04290F;
+
+  /* Chart colors */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  /* Border radius: 8px (tarjetas 12px via --radius-card) */
+  --radius: 0.5rem;
+  --radius-card: 0.75rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Sidebar colors */
+  --sidebar: #F8F9FA;
+  --sidebar-foreground: #121212;
+  --sidebar-primary: #121212;
+  --sidebar-primary-foreground: #F8F9FA;
+  --sidebar-accent: #F8F9FA;
+  --sidebar-accent-foreground: #121212;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #C9A961;
+}
+
+.dark {
+  --background: #020817;
+  --foreground: #F8FAFC;
+  --card: #0F172A;
+  --card-foreground: #F8FAFC;
+  --popover: #0F172A;
+  --popover-foreground: #F8FAFC;
+  --main-bg: #020817;
+
+  /* Primario claro #A867E3 con texto oscuro encima */
+  --primary: #A867E3;
+  --primary-foreground: #020817;
+  --primary-hover: #B98BEA;
+  --primary-soft: rgba(168, 103, 227, 0.16);
+  --secondary: #A867E3;
+  --secondary-foreground: #020817;
+
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  --accent: #1E293B;
+  --accent-foreground: #F8FAFC;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --destructive-text: #F37272;
+  --success-text: #3CDDA2;
+  --warning-text: #F7B23B;
+  --border: #1E293B;
+  --border-strong: #324653;
+  --input: #1E293B;
+  --ring: #A867E3;
+
+  /* Mejora de contraste para spans en modo oscuro; las superficies portadas
+     (.pg-home / .pg-chrome) usan sus propios tokens y quedan exentas. */
+  & span:not(.pg-home *):not(.pg-chrome *) {
+    color: #C0C0C0 !important;
+  }
+}
+
+@theme inline {
+  /* Font variables */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Color mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Chart color mappings */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar color mappings */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Criscom Group — brand color mappings */
+  --color-fv-gold: #4B2281; /* Primario morado para compatibilidad */
+  --color-fv-gold-bright: #A867E3; /* Primario dark mode */
+  --color-fv-black: #020817; /* Background dark */
+  --color-fv-gray: #1E293B; /* Background secondary dark */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    min-width: 320px;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+  }
+
+  img, video, canvas, svg {
+    max-width: 100%;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  /* Typography refinement - Estilo Apple/Tesla */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 7vw, 3.75rem);
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: clamp(1.75rem, 6vw, 3rem);
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: clamp(1.35rem, 5vw, 2.25rem);
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better focus states */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  @media (max-width: 640px) {
+    input, select, textarea {
+      font-size: 16px;
+    }
+  }
+
+  /* Smooth theme transition when toggling theme */
+  .theme-transition * {
+    transition: background-color 400ms ease, color 400ms ease,
+                border-color 400ms ease, box-shadow 400ms ease;
+  }
+}
+
+/* Custom utility classes for Criscom Group theme */
+@layer utilities {
+  /* Dark card, section, and subtle UI helpers for OLED */
+  .card-dark {}
+  .border-hairline {}
+  .section-dark {}
+  .overlay-soft {}
+  .dot-neutral {}
+  .dot-neutral-active {}
+
+  /* Logo visibility enhancement for dark mode */
+  .logo-dark-mode {
+    filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+  }
+
+  /* Transiciones suaves para cambios de tema */
+.transition-theme {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+}
+
+/* Apply overrides scoped to dark root for custom classes */
+.dark .card-dark {
+  background-color: var(--secondary);
+  color: var(--foreground);
+}
+.dark .border-hairline {
+  border-color: var(--border);
+}
+.dark .section-dark {
+  background-color: rgb(10 10 10);
+}
+.dark .overlay-soft {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+.dark .dot-neutral {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+.dark .dot-neutral-active {
+  background-color: var(--primary);
+}
+  /* OLED-friendly header surface with subtle glass effect */
+  .header-oled {
+    background-color: rgba(0, 0, 0, 0.72);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+    .header-oled {
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+    }
+  }
+  /* Criscom Group — brand color utilities */
+  .text-fv-gold {
+    color: var(--color-fv-gold);
+  }
+  .text-fv-gold-bright {
+    color: var(--color-fv-gold-bright);
+  }
+  .text-fv-black {
+    color: var(--color-fv-black);
+  }
+  .text-fv-gray {
+    color: var(--color-fv-gray);
+  }
+  .bg-fv-gold {
+    background-color: var(--color-fv-gold);
+  }
+  .bg-fv-gold-bright {
+    background-color: var(--color-fv-gold-bright);
+  }
+  .bg-fv-black {
+    background-color: var(--color-fv-black);
+  }
+  .bg-fv-gray {
+    background-color: var(--color-fv-gray);
+  }
+  .border-fv-gold {
+    border-color: var(--color-fv-gold);
+  }
+  .border-fv-gold-bright {
+    border-color: var(--color-fv-gold-bright);
+  }
+  .border-fv-black {
+    border-color: var(--color-fv-black);
+  }
+  .border-fv-gray {
+    border-color: var(--color-fv-gray);
+  }
+  .logo-img {
+    height: 4rem; /* h-16 equivalente */
+    width: auto;
+  }
+  /* Added mobile-friendly touch target utilities */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .touch-target-large {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+/* ============================================ */
+/* ADVANCED UTILITIES */
+/* ============================================ */
+@layer utilities {
+  /* ============================================ */
+  /* GLASSMORPHISM ENHANCEMENT */
+  /* ============================================ */
+  .glass-card {
+    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl backdrop-saturate-150;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .glass-card-strong {
+    @apply bg-white/90 dark:bg-gray-900/90 backdrop-blur-3xl backdrop-saturate-200;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  /* ============================================ */
+  /* GLOW EFFECTS */
+  /* ============================================ */
+  .glow-primary {
+    box-shadow: 0 0 20px rgba(201, 169, 97, 0.3);
+  }
+
+  .glow-primary-strong {
+    box-shadow: 0 0 40px rgba(201, 169, 97, 0.6);
+  }
+
+  /* ============================================ */
+  /* GRADIENT TEXT UTILITIES */
+  /* ============================================ */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary via-fv-gold to-primary bg-clip-text text-transparent;
+    background-size: 200% auto;
+  }
+
+  .text-gradient-animated {
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% center; }
+    50% { background-position: 100% center; }
+  }
+
+  /* Shimmer animation for modern gradient effects */
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* ============================================ */
+  /* GRADIENT UTILITIES */
+  /* ============================================ */
+  .bg-gradient-radial {
+    background-image: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+
+  /* ============================================ */
+  /* ACCESSIBILITY - REDUCED MOTION */
+  /* ============================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+

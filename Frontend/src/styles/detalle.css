@@ -1,0 +1,91 @@
+/* generado por odd/tools/od2css.py desde el diseño aprobado — editar a mano si hace falta */
+.pg-detalle{container-type:inline-size;font-size:14px;line-height:1.4;--scrim:222 84% 5%;}
+.pg-detalle *{box-sizing:border-box}
+.pg-detalle .scr{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:12px}
+.pg-detalle .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pg-detalle .num{font-variant-numeric:tabular-nums}
+.pg-detalle svg.ic{flex:none}
+.pg-detalle button{font-family:inherit;color:inherit}
+.pg-detalle :focus-visible{outline:2px solid hsl(var(--ring));outline-offset:2px}
+.pg-detalle .pg{display:flex;flex-direction:column;gap:12px}
+.pg-detalle .hd{display:flex;align-items:center;gap:8px;min-height:44px}
+.pg-detalle .hd h1{flex:1;font-size:24px;font-weight:600;letter-spacing:-.01em;line-height:1.2;min-width:0;overflow-wrap:anywhere}
+.pg-detalle .acts{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none}
+.pg-detalle .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 16px;border-radius:8px;border:1px solid transparent;font:600 14px/1 inherit;font-family:inherit;text-decoration:none;white-space:nowrap;cursor:pointer;background:hsl(var(--primary));color:hsl(var(--primary-foreground))}
+.pg-detalle .btn:hover{background:hsl(var(--primary-hover))}
+.pg-detalle .btn.out{background:hsl(var(--card));color:hsl(var(--foreground));border-color:hsl(var(--border-strong))}
+.pg-detalle .btn.out:hover{background:hsl(var(--sidebar-hover))}
+.pg-detalle .btn.gh{background:transparent;color:hsl(var(--foreground))}
+.pg-detalle .btn.gh:hover{background:hsl(var(--sidebar-hover))}
+.pg-detalle .btn[aria-disabled=true]{background:hsl(var(--muted));color:hsl(var(--nav-fg-2));border-color:hsl(var(--border-strong));cursor:not-allowed}
+.pg-detalle .ib{flex:none;width:44px;height:44px;display:inline-grid;place-items:center;border-radius:8px;border:1px solid hsl(var(--border-strong));background:hsl(var(--card));color:hsl(var(--foreground));cursor:pointer}
+.pg-detalle .ib:hover{background:hsl(var(--sidebar-hover))}
+.pg-detalle .sum{display:grid;grid-template-columns:1.25fr 1fr 1.35fr 1fr;gap:1px;background:hsl(var(--border));border:1px solid hsl(var(--border));border-radius:12px;overflow:hidden}
+.pg-detalle .cell{background:hsl(var(--card));padding:12px 16px;min-width:0}
+.pg-detalle .cell .l{font-size:13px;color:hsl(var(--muted-foreground));line-height:1.3}
+.pg-detalle .cell .v{margin-top:4px;font-size:15px;font-weight:600;line-height:1.3}
+.pg-detalle .cell .v.big{font-size:28px;line-height:1.15;letter-spacing:-.01em}
+.pg-detalle .cell .s{margin-top:2px;font-size:13px;color:hsl(var(--nav-fg-2));line-height:1.3}
+.pg-detalle .st{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;line-height:1.3}
+.pg-detalle .st.ok{color:hsl(var(--success-text))}
+.pg-detalle .st.warn{color:hsl(var(--warning-text))}
+.pg-detalle .st.bad{color:hsl(var(--destructive-text))}
+.pg-detalle .st.neu{color:hsl(var(--nav-fg-2))}
+.pg-detalle .tag{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border:1px solid hsl(var(--border-strong));border-radius:6px;font-size:12.5px;font-weight:500;color:hsl(var(--nav-fg-2));line-height:1.3;white-space:nowrap}
+.pg-detalle .note{display:flex;align-items:flex-start;gap:10px;min-height:44px;padding:11px 16px;border:1px solid hsl(var(--border-strong));border-radius:12px;background:hsl(var(--card));font-size:14px;line-height:1.4}
+.pg-detalle .note .ic{margin-top:1px}
+.pg-detalle .note.warn .ic{color:hsl(var(--warning-text))}
+.pg-detalle .note.bad .ic{color:hsl(var(--destructive-text))}
+.pg-detalle .note.ok .ic{color:hsl(var(--success-text))}
+.pg-detalle .note.neu .ic{color:hsl(var(--nav-fg-2))}
+.pg-detalle .note b{font-weight:600}
+.pg-detalle .body{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start}
+.pg-detalle .col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pg-detalle .card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;min-width:0;overflow:hidden}
+.pg-detalle .card>h2{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:48px;padding:0 16px;border-bottom:1px solid hsl(var(--border));font-size:15px;font-weight:600}
+.pg-detalle .card>h2 small{font-size:13px;font-weight:400;color:hsl(var(--muted-foreground))}
+.pg-detalle .tr{display:grid;grid-template-columns:minmax(0,1fr) 56px 112px 120px;gap:12px;align-items:center;padding:10px 16px;border-bottom:1px solid hsl(var(--border))}
+.pg-detalle .tr.th{min-height:36px;padding-top:6px;padding-bottom:6px;font-size:13px;color:hsl(var(--muted-foreground));background:hsl(var(--muted))}
+.pg-detalle .tr .r{text-align:right}
+.pg-detalle .pn{font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.pg-detalle .ps{margin-top:2px;font-size:13px;color:hsl(var(--nav-fg-2));line-height:1.35}
+.pg-detalle .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pg-detalle .pc{padding:12px 16px;border-bottom:1px solid hsl(var(--border))}
+.pg-detalle .pc .q{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:14px;color:hsl(var(--nav-fg-2))}
+.pg-detalle .pc .q b{color:hsl(var(--foreground));font-weight:600}
+.pg-detalle .tot{margin-left:auto;width:340px;max-width:100%;padding:8px 16px 16px}
+.pg-detalle .tot .row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:28px;color:hsl(var(--nav-fg-2))}
+.pg-detalle .tot .row.g{color:hsl(var(--foreground))}
+.pg-detalle .tot .final{margin-top:8px;padding-top:10px;border-top:1px solid hsl(var(--border-strong));display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.pg-detalle .tot .final span{font-size:15px;font-weight:600}
+.pg-detalle .tot .final b{font-size:24px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.pg-detalle .dl{padding:4px 16px 8px}
+.pg-detalle .dl div{display:grid;grid-template-columns:104px minmax(0,1fr);gap:12px;align-items:baseline;min-height:32px;padding:6px 0}
+.pg-detalle .dl dt{font-size:13px;color:hsl(var(--muted-foreground))}
+.pg-detalle .dl dd{overflow-wrap:anywhere;line-height:1.4}
+.pg-detalle .bar{flex:none;display:flex;gap:8px;padding:8px 12px;border-top:1px solid hsl(var(--border));background:hsl(var(--card))}
+.pg-detalle .bar .btn{flex:1}
+.pg-detalle .scrim{position:absolute;inset:0;background:hsl(var(--scrim)/.5);z-index:10}
+.pg-detalle .dlg{position:absolute;left:50%;top:24px;transform:translateX(-50%);width:440px;max-width:calc(100% - 24px);z-index:20;border:1px solid hsl(var(--border));border-radius:12px;background:hsl(var(--card));box-shadow:0 16px 40px hsl(222 47% 11%/.25)}
+.pg-detalle .dlg h3{display:flex;align-items:center;justify-content:space-between;min-height:56px;padding:0 8px 0 20px;font-size:18px;font-weight:600;border-bottom:1px solid hsl(var(--border))}
+.pg-detalle .dlg .pv{padding:16px 20px}
+.pg-detalle .paper{background:#fff;color:#14121c;border:1px solid hsl(var(--border-strong));border-radius:8px;padding:16px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:380px;overflow:auto}
+.pg-detalle .paper hr{border:0;border-top:1px dashed #8a8597;margin:8px 0}
+.pg-detalle .paper .pr{display:flex;justify-content:space-between;gap:12px}
+.pg-detalle .paper .c{text-align:center}
+.pg-detalle .paper .num{white-space:nowrap}
+.pg-detalle .dlg .acts{margin:0;justify-content:flex-end;padding:0 20px 20px;display:flex;gap:8px;flex-wrap:wrap}
+.pg-detalle .deny{max-width:560px}
+.pg-detalle .deny .dic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;margin-bottom:12px;background:hsl(var(--muted));color:hsl(var(--nav-fg-2))}
+.pg-detalle .deny p{margin-top:6px;color:hsl(var(--nav-fg-2));line-height:1.5}
+.pg-detalle .deny .box{padding:24px}
+@container (max-width:639px){
+.pg-detalle .hd h1{font-size:20px}
+.pg-detalle .sum{grid-template-columns:1fr 1fr}
+.pg-detalle .sum .cell:first-child,.pg-detalle .sum .cell:last-child{grid-column:1/-1}
+.pg-detalle .cell{padding:12px}
+.pg-detalle .cell .v.big{font-size:28px}
+.pg-detalle .body{grid-template-columns:minmax(0,1fr);gap:12px}
+.pg-detalle .col{gap:12px}
+.pg-detalle .tot{width:100%}
+}

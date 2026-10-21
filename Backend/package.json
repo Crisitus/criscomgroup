@@ -1,0 +1,51 @@
+{
+  "name": "criscomgroup-erp-backend",
+  "version": "1.0.0",
+  "description": "Criscom Group — ERP backend API (Express + Sequelize + MySQL)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest --testEnvironment node --runInBand --forceExit",
+    "test:mysql": "cross-env TEST_DB_DIALECT=mysql LOCAL_TEST_DB=true jest --testEnvironment node --runInBand --forceExit",
+    "test:watch": "jest --testEnvironment node --watch --runInBand",
+    "test:coverage": "jest --testEnvironment node --coverage --runInBand --forceExit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.10",
+    "adm-zip": "^0.6.0",
+    "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "bwip-js": "^4.5.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.6.2",
+    "express-validator": "^7.2.1",
+    "google-auth-library": "^10.9.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.12.0",
+    "node-forge": "^1.4.0",
+    "nodemailer": "^9.0.5",
+    "sequelize": "^6.37.6",
+    "sqlite3": "^6.0.1",
+    "xml-crypto": "^6.1.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.0.0",
+    "cross-env": "^7.0.3",
+    "jest": "^29.0.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0"
+  },
+  "overrides": {
+    "uuid": "11.1.1"
+  }
+}

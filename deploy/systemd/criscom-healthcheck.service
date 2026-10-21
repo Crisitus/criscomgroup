@@ -1,0 +1,11 @@
+[Unit]
+Description=Autorreparación del núcleo CRISCOM y acceso ERP privado
+After=docker.service network-online.target
+Wants=docker.service network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/criscom-healthcheck
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

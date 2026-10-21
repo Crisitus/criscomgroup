@@ -1,0 +1,32 @@
+# ---------------------------------------------------------------------------
+# Ecommerce — Archivos excluidos del build context de Docker.
+# Critical: sin esto, npm ci se "contamina" con el node_modules local (que
+# puede ser de otra arquitectura) y .next/ del host es enorme.
+# ---------------------------------------------------------------------------
+
+node_modules
+.next
+out
+.turbo
+coverage
+.git
+.DS_Store
+Thumbs.db
+
+# Env files (los build-args los pasa docker-compose)
+.env
+.env.*
+!.env.example
+
+# Archivos de editores
+.vscode
+.idea
+*.swp
+
+# Meta del propio docker
+Dockerfile*
+.dockerignore
+
+# Build artifacts de TypeScript
+tsconfig.tsbuildinfo
+*.log

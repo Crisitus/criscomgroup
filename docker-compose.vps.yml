@@ -1,0 +1,131 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: criscomgroup-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD es obligatorio}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-erp_computacion}
+      MYSQL_USER: ${MYSQL_USER:-erpcomp}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD es obligatorio}
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - erpcomp_mysql_data:/var/lib/mysql
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    mem_limit: 1024m
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: criscomgroup-backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-erp_computacion}
+      DB_USER: ${MYSQL_USER:-erpcomp}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD es obligatorio}
+      DB_DIALECT: mysql
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET es obligatorio}
+      PAYMENT_CREDENTIALS_KEY: ${PAYMENT_CREDENTIALS_KEY:?PAYMENT_CREDENTIALS_KEY es obligatorio}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      MASTER_ADMIN_NAME: ${MASTER_ADMIN_NAME:-Administrador}
+      MASTER_ADMIN_EMAIL: ${MASTER_ADMIN_EMAIL:?MASTER_ADMIN_EMAIL es obligatorio}
+      MASTER_ADMIN_PASSWORD: ${MASTER_ADMIN_PASSWORD:?MASTER_ADMIN_PASSWORD es obligatorio}
+      RENIEC_API_KEY: ${RENIEC_API_KEY:-}
+      FEATURE_ECOMMERCE: ${FEATURE_ECOMMERCE:-true}
+      FEATURE_MARKETING: ${FEATURE_MARKETING:-false}
+      FEATURE_LIBRO_RECLAMACIONES: ${FEATURE_LIBRO_RECLAMACIONES:-false}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://criscomgroup.com.pe}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://criscomgroup.com.pe}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-https://criscomgroup.com.pe,https://www.criscomgroup.com.pe}
+      OPENCLAW_SERVICE_WEBHOOK_SECRET: ${OPENCLAW_SERVICE_WEBHOOK_SECRET:?OPENCLAW_SERVICE_WEBHOOK_SECRET es obligatorio}
+      OPENCLAW_SERVICE_TECHNICIANS: ${OPENCLAW_SERVICE_TECHNICIANS:-{}}
+    volumes:
+      - erpcomp_backend_uploads:/app/src/uploads
+    expose:
+      - "3000"
+    networks:
+      internal:
+      shared-gateway:
+        aliases:
+          - criscomgroup-backend
+    mem_limit: 768m
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${PUBLIC_BASE_URL:-https://criscomgroup.com.pe}/api
+        VITE_FACTURADOR_API_URL: ${VITE_FACTURADOR_API_URL:-https://criscomgroup.com.pe/api}
+        VITE_FEATURE_ECOMMERCE: ${FEATURE_ECOMMERCE:-true}
+        VITE_FEATURE_MARKETING: ${FEATURE_MARKETING:-false}
+        VITE_FEATURE_LIBRO_RECLAMACIONES: ${FEATURE_LIBRO_RECLAMACIONES:-false}
+    container_name: criscomgroup-frontend
+    restart: always
+    depends_on:
+      - backend
+    expose:
+      - "80"
+    networks:
+      shared-gateway:
+        aliases:
+          - criscomgroup-frontend
+    mem_limit: 192m
+
+  ecommerce:
+    build:
+      context: ./Ecommerce
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${PUBLIC_BASE_URL:-https://criscomgroup.com.pe}
+        NEXT_PUBLIC_SITE_URL: ${CANONICAL_SITE_URL:-https://criscomgroup.com.pe}
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    container_name: criscomgroup-ecommerce
+    restart: always
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${PUBLIC_BASE_URL:-https://criscomgroup.com.pe}
+      NEXT_PUBLIC_SITE_URL: ${CANONICAL_SITE_URL:-https://criscomgroup.com.pe}
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      ERP_INTERNAL_URL: http://criscomgroup-frontend:80
+      BACKEND_INTERNAL_URL: http://criscomgroup-backend:3000
+    expose:
+      - "3000"
+    networks:
+      shared-gateway:
+        aliases:
+          - criscomgroup-ecommerce
+    mem_limit: 768m
+
+volumes:
+  erpcomp_mysql_data:
+  erpcomp_backend_uploads:
+
+networks:
+  internal:
+    name: criscomgroup-internal
+    internal: true
+  shared-gateway:
+    external: true
+    name: shared-gateway

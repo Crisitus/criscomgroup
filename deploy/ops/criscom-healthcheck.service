@@ -1,0 +1,7 @@
+[Unit]
+Description=Verificación de salud CRISCOM
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/criscom-healthcheck

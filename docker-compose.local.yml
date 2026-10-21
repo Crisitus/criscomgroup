@@ -1,0 +1,26 @@
+# Local override (not part of the original repo).
+# Usage: docker compose -f docker-compose.dev.yml -f docker-compose.local.yml up -d db backend frontend ecommerce
+# Runs the storefront with `next dev` so rewrites resolve to the backend/ERP containers.
+services:
+  frontend:
+    environment:
+      __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: frontend
+  ecommerce:
+    build: !reset null
+    image: node:22-slim
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+      BACKEND_INTERNAL_URL: http://backend:3000
+      INTERNAL_API_URL: http://backend:3000
+      ERP_INTERNAL_URL: http://frontend:5173
+      NEXT_PUBLIC_API_URL: http://localhost:3100
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - ./Ecommerce:/app:delegated
+      - erpcomp_ecommerce_node_modules:/app/node_modules
+    command: sh -c "npm install --legacy-peer-deps && npx next dev -H 0.0.0.0 -p 3000"
+volumes:
+  erpcomp_ecommerce_node_modules:

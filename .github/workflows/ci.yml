@@ -1,0 +1,152 @@
+name: CI
+
+# Ejecuta lint, build y tests para los 3 paquetes del monorepo.
+# Para que un PR se pueda mergear, TODOS los jobs deben pasar.
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+
+  # ======================================================================
+  # Backend (Express) — Tests de integración contra MySQL 8.
+  # No hay build (Node no se transpila) ni lint (no hay ESLint configurado).
+  # ======================================================================
+  backend:
+    name: Backend — Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      db-test:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: erp_computacion_test
+          MYSQL_USER: erpcomp_test
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3307:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: Backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Backend
+        run: npm ci
+
+      - name: Run integration tests
+        working-directory: Backend
+        env:
+          NODE_ENV: test
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3307
+          DB_NAME: erp_computacion_test
+          DB_USER: erpcomp_test
+          DB_PASSWORD: test_password
+          JWT_SECRET: test_jwt_secret_for_ci_do_not_use_in_prod
+          JWT_EXPIRES_IN: 1h
+        run: npm test
+
+  # ======================================================================
+  # Frontend (React + Vite) — Lint + Build + Tests.
+  # Un solo job comparte el cache de npm ci entre los 3 pasos.
+  # ======================================================================
+  frontend:
+    name: Frontend — Lint + Build + Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: Frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Frontend
+        run: npm ci
+
+      - name: Lint (ESLint)
+        working-directory: Frontend
+        run: npm run lint
+
+      - name: Build (TypeScript + Vite)
+        working-directory: Frontend
+        env:
+          # Valores dummy solo para que el build tenga variables presentes.
+          # En prod se inyectan desde docker-compose build args.
+          VITE_API_URL: https://api.criscomgroup.com.pe/api
+          VITE_FACTURADOR_API_URL: https://api.criscomgroup.com.pe/api
+          VITE_FEATURE_ECOMMERCE: 'true'
+          VITE_FEATURE_MARKETING: 'false'
+          VITE_FEATURE_LIBRO_RECLAMACIONES: 'false'
+        run: npm run build
+
+      - name: Run tests (Vitest)
+        working-directory: Frontend
+        env:
+          VITE_API_URL: http://localhost:3100/api
+        run: npm test
+
+  # ======================================================================
+  # Ecommerce (Next.js) — Lint + Type-check + Build.
+  # No tiene suite de tests todavía.
+  # ======================================================================
+  ecommerce:
+    name: Ecommerce — Lint + Type-check + Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: Ecommerce/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Ecommerce
+        # --legacy-peer-deps es necesario por la convivencia MUI v7 + React 18.
+        run: npm ci --legacy-peer-deps
+
+      - name: Lint (Next + ESLint)
+        working-directory: Ecommerce
+        # next lint + ignoreDuringBuilds:true en next.config.js significa que
+        # el build no se detiene por warnings, pero el CI sí los muestra.
+        # Usamos `|| true` mientras se refactoriza el TS legacy — remover
+        # en un ciclo futuro para hacer los lints bloqueantes.
+        run: npm run lint || true
+
+      - name: Type-check (tsc --noEmit)
+        working-directory: Ecommerce
+        # Igual que arriba: ignoreBuildErrors está activo en next.config.
+        # Dejamos el step informativo. Remover `|| true` cuando el TS esté limpio.
+        run: npm run type-check || true
+
+      - name: Build (Next.js)
+        working-directory: Ecommerce
+        env:
+          NEXT_PUBLIC_API_URL: https://api.criscomgroup.com.pe
+          NEXT_PUBLIC_SITE_URL: https://criscomgroup.com.pe
+          NEXT_TELEMETRY_DISABLED: '1'
+        run: npm run build

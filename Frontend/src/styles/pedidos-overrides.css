@@ -1,0 +1,11 @@
+/* Ajustes del port: panel lateral y diálogos viven en un portal (fuera de .pg-pedidos). */
+.pg-drawer.pg-pedidos { position: fixed; top: 0; right: 0; bottom: 0; z-index: 61; width: 480px; max-width: 100vw; container-type: normal; display: flex; }
+.pg-drawer.pg-pedidos .dp { position: static; width: 100%; height: 100%; box-shadow: -8px 0 24px hsl(222 47% 11% / 0.18); }
+@media (max-width: 639px) {
+  .pg-drawer.pg-pedidos .dp { box-shadow: none; border-left: 0; }
+  .pg-drawer.pg-pedidos .dph { padding: 6px 12px 8px 4px; align-items: center; }
+  .pg-drawer.pg-pedidos .dpb { padding: 0 12px; }
+  .pg-drawer.pg-pedidos .g2 { grid-template-columns: 1fr; }
+  .pg-drawer.pg-pedidos .dpf { padding: 10px 12px 12px; }
+}
+.pg-pedidos .btn[aria-disabled="true"] { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); border-color: hsl(var(--border-strong)); cursor: not-allowed; }

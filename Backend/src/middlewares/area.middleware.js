@@ -1,0 +1,2 @@
+const { Op } = require('sequelize'); const { AreaGrant } = require('../models');
+module.exports = area => async (req,res,next) => { if (req.user.id_role === 1 || req.user.superusuario_temporal) return next(); const grant = await AreaGrant.findOne({ where: { user_id: req.user.id_user, area, active: true, [Op.or]: [{ expires_at: null }, { expires_at: { [Op.gt]: new Date() } }] } }); if (!grant) return res.status(403).json({ message: 'No tienes acceso vigente a esta área' }); req.areaGrant=grant; next(); };

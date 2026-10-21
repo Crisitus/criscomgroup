@@ -1,0 +1,123 @@
+# ---------------------------------------------------------------------------
+# Criscom Group — docker-compose para DESARROLLO local.
+#
+# Uso:
+#   docker compose -f docker-compose.dev.yml up --build
+#
+# Características dev:
+#   - Bind mounts al código fuente (hot reload con nodemon / vite dev).
+#   - DB, backend, frontend, ecommerce TODOS expuestos al host en puertos
+#     distintos (3306, 3100, 5173, 3000) para poder atacar cada uno sin
+#     pasar por reverse proxy.
+#   - db-test aislada en :3307 para correr tests de integración localmente.
+#   - Dockerfile.dev (no multi-stage, incluye deps de desarrollo).
+#   - Secretos: OK hardcodear valores de desarrollo aquí (son locales).
+#
+# Para producción usar docker-compose.yml (sin -f).
+# ---------------------------------------------------------------------------
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: dev_root_password_change_me
+      MYSQL_DATABASE: erp_computacion
+      MYSQL_USER: erpcomp
+      MYSQL_PASSWORD: dev_password_change_me
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - erpcomp_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -pdev_root_password_change_me"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  db-test:
+    image: mysql:8.0
+    container_name: erp_computacion_mysql_test
+    environment:
+      MYSQL_ROOT_PASSWORD: test_root_password
+      MYSQL_DATABASE: erp_computacion_test
+      MYSQL_USER: erpcomp_test
+      MYSQL_PASSWORD: test_password
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - erpcomp_mysql_test_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3100:3000"
+    env_file:
+      - ./Backend/.env
+    volumes:
+      - ./Backend:/app:delegated
+      - erpcomp_backend_node_modules:/app/node_modules
+      - erpcomp_backend_uploads:/app/src/uploads
+    # npm run dev usa nodemon con hot reload (script actualizado en package.json).
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3100/api
+      VITE_FACTURADOR_API_URL: http://localhost:8001/api
+      VITE_FEATURE_ECOMMERCE: "true"
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./Frontend:/app:delegated
+      - erpcomp_frontend_node_modules:/app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+
+  # Tienda pública Next.js. Consume /api/ecommerce/* del Backend.
+  # Requiere FEATURE_ECOMMERCE=true en el .env del Backend.
+  ecommerce:
+    build:
+      context: ./Ecommerce
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3100
+      NODE_ENV: production
+
+volumes:
+  erpcomp_mysql_data:
+  erpcomp_backend_node_modules:
+  erpcomp_backend_uploads:
+  erpcomp_frontend_node_modules:
+  erpcomp_mysql_test_data:

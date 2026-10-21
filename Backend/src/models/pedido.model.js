@@ -1,0 +1,31 @@
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
+
+module.exports = sequelize.define('Pedido', {
+  id_pedido: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  numero_pedido: { type: DataTypes.STRING(32), allowNull: false, unique: true },
+  payment_token_hash: { type: DataTypes.STRING(64), allowNull: true },
+  id_usuario: { type: DataTypes.INTEGER, allowNull: true },
+  cliente_email: { type: DataTypes.STRING(150), allowNull: false },
+  cliente_nombre: { type: DataTypes.STRING(150), allowNull: false },
+  cliente_telefono: { type: DataTypes.STRING(30), allowNull: false },
+  cliente_documento_tipo: { type: DataTypes.ENUM('DNI', 'RUC', 'CE'), allowNull: true },
+  cliente_documento_numero: { type: DataTypes.STRING(20), allowNull: true },
+  razon_social: { type: DataTypes.STRING(200), allowNull: true },
+  tipo_entrega: { type: DataTypes.ENUM('domicilio', 'recojo_tienda'), allowNull: false },
+  direccion_envio: { type: DataTypes.TEXT, allowNull: true },
+  direccion_departamento: { type: DataTypes.STRING(80), allowNull: true },
+  direccion_provincia: { type: DataTypes.STRING(80), allowNull: true },
+  direccion_distrito: { type: DataTypes.STRING(80), allowNull: true },
+  direccion_referencia: { type: DataTypes.TEXT, allowNull: true },
+  metodo_pago: { type: DataTypes.STRING(30), allowNull: false },
+  estado: { type: DataTypes.ENUM('pendiente_pago', 'confirmado', 'preparando', 'enviado', 'entregado', 'cancelado'), allowNull: false, defaultValue: 'pendiente_pago' },
+  estado_pago: { type: DataTypes.ENUM('pendiente', 'pagado', 'fallido', 'devuelto'), allowNull: false, defaultValue: 'pendiente' },
+  tipo_comprobante: { type: DataTypes.ENUM('nota_venta', 'boleta', 'factura'), allowNull: false, defaultValue: 'boleta' },
+  subtotal: { type: DataTypes.DECIMAL(12, 2), allowNull: false },
+  costo_envio: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
+  recargo_tarjeta: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 },
+  total_final: { type: DataTypes.DECIMAL(12, 2), allowNull: false },
+  notas_cliente: { type: DataTypes.TEXT, allowNull: true },
+  venta_id: { type: DataTypes.INTEGER, allowNull: true },
+}, { tableName: 'pedidos', createdAt: 'fecha_creacion', updatedAt: 'fecha_actualizacion' });

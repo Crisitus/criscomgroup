@@ -1,0 +1,24 @@
+const router = require('express').Router();
+const auth = require('../middlewares/auth.middleware');
+const { requireAdminAccess } = require('../middlewares/admin.middleware');
+const { publicSubmissionLimiter } = require('../middlewares/security.middleware');
+const controller = require('../controllers/community.controller');
+const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(error => {
+  console.error('[community]', req.method, req.originalUrl, error.message);
+  if (res.headersSent) return next(error);
+  return res.status(500).json({ message: 'Error interno al procesar la solicitud de comunidad' });
+});
+const admin = [auth, requireAdminAccess];
+router.post('/subscribe', publicSubmissionLimiter, asyncHandler(controller.subscribe));
+router.get('/unsubscribe/:token', asyncHandler(controller.unsubscribeConfirm));
+router.post('/unsubscribe/:token', asyncHandler(controller.unsubscribe));
+router.get('/admin', ...admin, asyncHandler(controller.list));
+router.get('/admin/members/export', ...admin, asyncHandler(controller.exportMembers));
+router.patch('/admin/members/:id/baja', ...admin, asyncHandler(controller.memberBaja));
+router.post('/admin/campaigns', ...admin, asyncHandler(controller.createCampaign));
+router.get('/admin/campaigns/:id', ...admin, asyncHandler(controller.getCampaign));
+router.put('/admin/campaigns/:id', ...admin, asyncHandler(controller.updateCampaign));
+router.delete('/admin/campaigns/:id', ...admin, asyncHandler(controller.deleteCampaign));
+router.post('/admin/campaigns/:id/test', ...admin, asyncHandler(controller.testCampaign));
+router.post('/admin/campaigns/:id/send', ...admin, asyncHandler(controller.sendCampaign));
+module.exports = router;

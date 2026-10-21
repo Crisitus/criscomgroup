@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 266 58% 32%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 40%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 266 58% 32%;
+    --radius: 0.5rem;
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 210 40% 98%;
+    --warning: 38.3 92.1% 50.0%;
+    --warning-foreground: 222.2 47.4% 11.2%;
+    --info: 213 94% 68%;
+    --info-foreground: 210 40% 98%;
+
+    /* Shell del ERP (rediseño morado Criscom) */
+    --border-strong: 214.3 25% 82%;
+    --destructive-text: 0 72% 42%;
+    --success-text: 142 72% 24%;
+    --main-bg: 210 40% 98%;
+    --sidebar-hover: 270 30% 95%;
+    --sidebar-active: 271 40% 88%;
+    --sidebar-active-fg: 264 69% 21%;
+    --vivo: 269 51% 47%;
+    --nav-fg: 222 30% 17%;
+    --nav-fg-2: 215 20% 32%;
+    --plate: 0 0% 100%;
+    --warning-text: 30 92% 26%;
+    --primary-hover: 266 58% 25%;
+    --rh: 40px;
+    --ch: 34px;
+  }
+
+  @media (max-height: 760px) {
+    :root {
+      --rh: 36px;
+      --ch: 30px;
+    }
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 47.4% 11.2%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 271 69% 65%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 271 69% 65%;
+    --success: 142.1 70.6% 45.3%;
+    --success-foreground: 210 40% 98%;
+    --warning: 38.3 92.1% 50.0%;
+    --warning-foreground: 222.2 47.4% 11.2%;
+    --info: 213 94% 68%;
+    --info-foreground: 222.2 47.4% 11.2%;
+
+    --border-strong: 217.2 25% 26%;
+    --destructive-text: 0 84% 70%;
+    --success-text: 142 70% 55%;
+    --main-bg: 222.2 84% 4.9%;
+    --sidebar-hover: 217.2 32.6% 17.5%;
+    --sidebar-active: 264 69% 21%;
+    --sidebar-active-fg: 271 40% 80%;
+    --vivo: 271 69% 65%;
+    --nav-fg: 214 32% 91%;
+    --nav-fg-2: 215 20% 74%;
+    --warning-text: 38 92% 60%;
+    --primary-hover: 271 69% 73%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    min-width: 320px;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+  }
+
+  img, video, canvas, svg {
+    max-width: 100%;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  @media (max-width: 640px) {
+    input, select, textarea {
+      font-size: 16px;
+    }
+
+    h1 { font-size: clamp(1.5rem, 7vw, 2rem); }
+    h2 { font-size: clamp(1.25rem, 6vw, 1.75rem); }
+  }
+}
