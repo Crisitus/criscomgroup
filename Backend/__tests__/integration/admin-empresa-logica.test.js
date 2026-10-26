@@ -341,4 +341,33 @@ describe('Administracion - Empresa, SUNAT y pagos (logica)', () => {
       expect((await as('gerente', request(app).get('/api/companies/settings/ruc-sheet'))).body.uploaded).toBe(false);
     });
   });
+
+  describe('modo pruebas manual', () => {
+    const url = '/api/companies/settings/sunat-mode';
+    it('exige escribir la palabra de confirmacion y solo rol 1', async () => {
+      expect((await as('admin', request(app).patch(url)).send({ pruebas: true, confirmacion: 'PRUEBAS' })).statusCode).toBe(403);
+      const sin = await as('gerente', request(app).patch(url)).send({ pruebas: true });
+      expect(sin.statusCode).toBe(409);
+      expect(sin.body.message).toMatch(/Escribe PRUEBAS/);
+      expect(sin.body.errores).toMatchObject({ requiere_confirmacion: true, confirmacion_esperada: 'PRUEBAS' });
+      expect((await as('gerente', request(app).patch(url)).send({ pruebas: 'si', confirmacion: 'PRUEBAS' })).statusCode).toBe(422);
+    });
+    it('activa y desactiva las pruebas manuales', async () => {
+      const on = await as('gerente', request(app).patch(url)).send({ pruebas: true, confirmacion: 'pruebas' });
+      expect(on.statusCode).toBe(200);
+      expect(on.body).toMatchObject({ mode: 'sandbox', motivo: expect.any(String), pruebas_manual: true });
+      expect((await Company.findByPk(company.id_company)).sunat_pruebas_manual).toBe(true);
+      const off = await as('gerente', request(app).patch(url)).send({ pruebas: false, confirmacion: 'Producción' });
+      expect(off.statusCode).toBe(200);
+      expect(off.body.pruebas_manual).toBe(false);
+    });
+    it('PUT de la empresa no puede cambiar las columnas de modo', async () => {
+      await as('gerente', request(app).put(`/api/companies/${company.id_company}`))
+        .field('razon_social', 'Empresa seed-adm 2').field('ruc', '10456789012').field('direccion', 'Av. Nueva 456')
+        .field('sunat_pruebas_manual', 'true').field('sunat_produccion_desde', '2020-01-01');
+      const row = await Company.findByPk(company.id_company);
+      expect(row.sunat_pruebas_manual).toBe(false);
+      expect(row.sunat_produccion_desde).toBeNull();
+    });
+  });
 });

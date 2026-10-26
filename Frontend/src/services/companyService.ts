@@ -14,13 +14,20 @@ export interface Company {
   certificado_configurado?: boolean
   client_secret_configurado?: boolean
   ruc_valido?: boolean
-  // Modo real del servidor (SUNAT_MODE); no es editable desde la pantalla.
+  // Modo real de la empresa: automatico (servidor + SOL + certificado + ficha RUC) salvo pruebas manuales.
   production?: boolean
   modo_sunat?: 'production' | 'sandbox'
+  modo_sunat_estado?: SunatModeState
+  sunat_pruebas_manual?: boolean
+  sunat_produccion_desde?: string | null
   id_user?: number
   creado_en?: string
   actualizado_en?: string
 }
+
+/** Por que la empresa esta en pruebas o produccion: servidor (SUNAT_MODE), manual, incompleto o automatico. */
+export type SunatModeReason = 'servidor' | 'manual' | 'incompleto' | 'automatico'
+export interface SunatModeState { motivo: SunatModeReason; pendientes: string[]; activada: boolean; servidor: 'production' | 'sandbox'; aviso_servidor: string | null }
 
 export interface SaveCompanyResult { company: Company; avisos: string[]; certificado?: { vence_en: string } | null }
 
@@ -48,7 +55,10 @@ export const apiFailure = (error: unknown, fallback: string): ApiFailure => {
 }
 
 export interface IntegrationStatus {
-  sunat: { mode: 'production' | 'sandbox'; mode_valid: boolean; warning: string | null; credentials: boolean; certificate: boolean; connected: boolean; credentials_source?: string; certificate_source?: string }
+  sunat: {
+    mode: 'production' | 'sandbox'; mode_valid: boolean; warning: string | null
+    motivo?: SunatModeReason; pendientes?: string[]; pruebas_manual?: boolean; produccion_desde?: string | null; servidor?: 'production' | 'sandbox'
+    credentials: boolean; certificate: boolean; connected: boolean; credentials_source?: string; certificate_source?: string }
   culqi: { mode: string; source: string; public_key: boolean; secret_key: boolean; connected: boolean } | null
 }
 export interface RucSheet { uploaded: boolean; original_name?: string; updated_at?: string; size?: number | null; mime?: string | null }
@@ -67,6 +77,9 @@ export const uploadRucSheet = async (file: File): Promise<RucSheet> => {
   return (await api.post('/companies/settings/ruc-sheet', body, { headers: { 'Content-Type': 'multipart/form-data' } })).data
 }
 export const deleteRucSheet = async (): Promise<void> => { await api.delete('/companies/settings/ruc-sheet') }
+// Activa/desactiva el modo pruebas manual; el servidor exige escribir PRUEBAS o PRODUCCION.
+export const setSunatTestMode = async (pruebas: boolean, confirmacion: string): Promise<{ mode: 'production' | 'sandbox'; motivo: SunatModeReason; pendientes: string[] }> =>
+  (await api.patch('/companies/settings/sunat-mode', { pruebas, confirmacion })).data
 export const downloadRucSheet = async (): Promise<Blob> => (await api.get('/companies/settings/ruc-sheet/download', { responseType: 'blob' })).data
 
 // Devuelve null SOLO cuando no hay empresa; cualquier error (403, 500, red) se propaga para no confundirlo con "sin empresa".

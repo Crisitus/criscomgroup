@@ -112,7 +112,7 @@ const parseBody = (body, { creating, current }) => {
       }
     }
   }
-  if (body.production !== undefined) avisos.push('El modo producción se controla en el servidor (SUNAT_MODE) y no se cambia desde esta pantalla.');
+  if (body.production !== undefined) avisos.push('El modo producción no se cambia con este campo: es automático (SUNAT_MODE del servidor + configuración completa) y el modo pruebas se activa en «Modo SUNAT».');
   return { data, errores: Object.keys(errores).length ? errores : null, avisos };
 };
 
@@ -145,7 +145,7 @@ const getCompanyForSales = safe(async (_req, res) => {
   // Solo lo necesario para ventas; nunca sol_*, cert_path ni client_*.
   return res.status(200).json({
     message: 'Información de empresa para ventas',
-    data: { ...publicShape(company), production: sunat.sunatMode() === 'production' },
+    data: { ...publicShape(company), production: sunat.companyMode(company).mode === 'production' },
   });
 }, 'for-sales');
 
@@ -168,6 +168,7 @@ const createCompany = safe(async (req, res) => {
     facturacion_habilitada: false,
     emisor_predeterminado: false,
   });
+  await sunat.activateIfReady(company);
   await company.reload();
   return res.status(201).json({ message: 'Empresa creada correctamente', company, avisos: parsed.avisos, certificado: uploads.cert });
 }, 'crear');
@@ -196,6 +197,7 @@ const updateCompany = (partialUpdate) => safe(async (req, res) => {
   await company.update(data);
   if (logo) removeStored(oldLogo, ['logos']);
   if (cert) removeStored(oldCert, [path.join('private', 'certs')]);
+  await sunat.activateIfReady(company);
   await company.reload();
   return res.status(200).json({ message: 'Empresa actualizada correctamente', company, avisos: parsed.avisos, certificado: uploads.cert });
 }, 'actualizar');

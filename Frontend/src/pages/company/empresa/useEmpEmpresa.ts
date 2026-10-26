@@ -8,6 +8,10 @@ export interface EmpSaved { avisos: string[]; vence: string | null; at: string; 
 
 const LOGO_OK = /\.(jpe?g|png|webp)$/i
 const CERT_OK = /\.(pem|txt|crt|cer|cert)$/i
+const CERT_MIMES = ["application/x-pem-file", "text/plain", "application/x-x509-ca-cert"]
+
+/** Windows no registra MIME para .pem (llega vacio u octet-stream) y el backend filtra por MIME: se fija uno aceptado. */
+const certWithMime = (f: File) => (CERT_MIMES.includes(f.type) ? f : new File([f], f.name, { type: "application/x-pem-file", lastModified: f.lastModified }))
 
 /** Mensaje persistente del rechazo de un archivo (logo o certificado), antes de enviarlo. */
 export function fileProblem(kind: "logo" | "cert", f: File): string | null {
@@ -73,7 +77,7 @@ export function useEmpEmpresa(onDirty?: (n: number) => void) {
     if (!f) { set(kind, null); setFileErr(e => ({ ...e, [kind]: undefined })); return }
     const p = fileProblem(kind, f)
     setFileErr(e => ({ ...e, [kind]: p ?? undefined }))
-    if (!p) set(kind, f)
+    if (!p) set(kind, kind === "cert" ? certWithMime(f) : f)
   }, [set])
 
   const discard = useCallback(() => {

@@ -95,6 +95,10 @@ const Company = sequelize.define('Company', {
         allowNull: false,
         defaultValue: 'RUC10'
     },
+    // Pruebas manuales: el envio a SUNAT queda desactivado aunque la empresa este lista para produccion.
+    sunat_pruebas_manual: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    // Momento en que la empresa paso sola a produccion (SOL + certificado + ficha RUC). Null = aun no.
+    sunat_produccion_desde: { type: DataTypes.DATE, allowNull: true },
     id_user: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -139,9 +143,11 @@ Company.prototype.toJSON = function() {
   values.certificado_configurado = Boolean(values.cert_path) && (() => { try { return fs.existsSync(values.cert_path); } catch { return false; } })();
   values.client_secret_configurado = Boolean(values.client_secret);
   values.ruc_valido = Company.isValidRuc(values.ruc);
-  // `production` ya no es un interruptor propio: refleja el modo real del servidor (SUNAT_MODE).
-  values.modo_sunat = sunat.sunatMode();
-  values.production = values.modo_sunat === 'production';
+  // `production` no es un interruptor propio: refleja el modo real de esta empresa (servidor + configuracion + pruebas manuales).
+  const modo = sunat.companyMode(this);
+  values.modo_sunat = modo.mode;
+  values.production = modo.mode === 'production';
+  values.modo_sunat_estado = { motivo: modo.motivo, pendientes: modo.pendientes, activada: modo.activada, servidor: modo.servidor, aviso_servidor: modo.aviso_servidor };
   delete values.sol_user;
   delete values.sol_pass;
   delete values.cert_path;

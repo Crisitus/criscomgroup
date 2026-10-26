@@ -6,6 +6,7 @@ import { EmpCert } from "./EmpCert"
 import { EmpFicha } from "./EmpFicha"
 import { EmpIdent } from "./EmpIdent"
 import { EmpLogo } from "./EmpLogo"
+import { EmpModo } from "./EmpModo"
 import { EmpNote } from "./empParts"
 import { EmpRail } from "./EmpRail"
 import { EmpSaveBar, type SaveKind } from "./EmpSaveBar"
@@ -74,10 +75,12 @@ export function EmpEmpresaTab({ mob, ficha, onDirty }: EmpTabProps) {
             <div className="cards">
               <EmpIdent d={d} base={base} errs={errs} set={h.set} />
               <EmpLogo base={base} file={d.logo} error={errs.logo} onPick={f => h.pick("logo", f)} />
-              <EmpFicha ctl={ficha} alta={alta} />
               <EmpSol d={d} base={base} errs={errs} alta={alta} set={h.set} />
               <EmpCert base={base} file={d.cert} vence={h.vence} error={errs.cert} alta={alta} onPick={f => h.pick("cert", f)} />
               <EmpApi d={d} base={base} errs={errs} set={h.set} />
+              {/* Subir la ficha puede pasar la empresa a produccion: se relee para mostrar el modo nuevo. */}
+              <EmpFicha ctl={{ ...ficha, onSheet: s => { ficha.onSheet(s); void h.load(true) } }} alta={alta} cert={!!base?.certificado_configurado} />
+              <EmpModo base={base} onChanged={() => { void h.load(true); ficha.reload() }} />
             </div>
           </div>
         </div>

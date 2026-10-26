@@ -16,7 +16,7 @@ export interface EmpDraft {
 }
 
 export type EmpField = "razon_social" | "ruc" | "direccion" | "client_id" | "sol_user" | "sol_pass" | "client_secret" | "logo" | "cert"
-export type EmpSec = "ident" | "logo" | "ficha" | "sol" | "cert" | "api"
+export type EmpSec = "ident" | "logo" | "ficha" | "sol" | "cert" | "api" | "modo"
 export type EmpFlag = "err" | "chg"
 
 export const EMPTY_DRAFT: EmpDraft = {
@@ -102,6 +102,7 @@ export function sectionFlags(changed: EmpField[], errs: EmpErrors): Partial<Reco
   return out
 }
 
+/** Orden del flujo: datos y credenciales; la ficha RUC (con la empresa registrada y su certificado); y el modo SUNAT resultante. */
 export const EMP_SECS: [EmpSec, string][] = [
-  ["ident", "Identidad fiscal"], ["logo", "Logo"], ["ficha", "Ficha RUC"], ["sol", "Acceso SOL"], ["cert", "Certificado digital"], ["api", "API SUNAT"],
+  ["ident", "Identidad fiscal"], ["logo", "Logo"], ["sol", "Acceso SOL"], ["cert", "Certificado digital"], ["api", "API SUNAT"], ["ficha", "Ficha RUC"], ["modo", "Modo SUNAT"],
 ]
