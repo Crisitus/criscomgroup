@@ -342,6 +342,73 @@ describe('Administracion - Empresa, SUNAT y pagos (logica)', () => {
     });
   });
 
+  describe('certificado .p12/.pfx', () => {
+    const forge = require('node-forge');
+    const path = require('path');
+    const CERT_DIR = path.resolve(__dirname, '../../src/uploads/private/certs');
+    const PASS = 'clave-p12-seed-adm';
+    const keys = forge.pki.rsa.generateKeyPair(1024);
+    const makeCert = (ruc, publicKey = keys.publicKey) => {
+      const cert = forge.pki.createCertificate();
+      cert.publicKey = publicKey;
+      cert.serialNumber = '01';
+      cert.validity.notBefore = new Date(Date.now() - 86400000);
+      cert.validity.notAfter = new Date(Date.now() + 365 * 86400000);
+      const attrs = [{ name: 'organizationName', value: 'PRUEBA' }, { shortName: 'OU', value: ruc }, { name: 'commonName', value: `PRUEBA CDT ${ruc}` }];
+      cert.setSubject(attrs); cert.setIssuer(attrs);
+      cert.sign(keys.privateKey, forge.md.sha256.create());
+      return cert;
+    };
+    const p12 = (ruc, password = PASS) => Buffer.from(forge.asn1.toDer(forge.pkcs12.toPkcs12Asn1(keys.privateKey, [makeCert(ruc)], password, { algorithm: '3des' })).getBytes(), 'binary');
+    const put = async (attach, fields = {}) => {
+      const row = await Company.findByPk(company.id_company);
+      let req = as('gerente', request(app).put(`/api/companies/${company.id_company}`))
+        .field('razon_social', row.razon_social).field('ruc', row.ruc).field('direccion', row.direccion);
+      for (const [k, v] of Object.entries(fields)) req = req.field(k, v);
+      return req.attach('cert', attach.buffer, { filename: attach.name, contentType: 'application/octet-stream' });
+    };
+    const ruc = async () => (await Company.findByPk(company.id_company)).ruc;
+
+    it('sin contraseña o con contraseña incorrecta se rechaza sin guardar nada', async () => {
+      const before = fs.existsSync(CERT_DIR) ? fs.readdirSync(CERT_DIR).length : 0;
+      const sin = await put({ buffer: p12(await ruc()), name: 'certificado.p12' });
+      expect(sin.statusCode).toBe(422);
+      expect(sin.body.errores.cert).toMatch(/contraseña/);
+      const mala = await put({ buffer: p12(await ruc()), name: 'certificado.pfx' }, { cert_password: 'otra' });
+      expect(mala.statusCode).toBe(422);
+      expect(mala.body.errores.cert).toMatch(/contraseña es incorrecta/);
+      expect(fs.existsSync(CERT_DIR) ? fs.readdirSync(CERT_DIR).length : 0).toBe(before);
+    });
+    it('un .p12 de otro RUC se rechaza', async () => {
+      const res = await put({ buffer: p12('20100070970'), name: 'certificado.p12' }, { cert_password: PASS });
+      expect(res.statusCode).toBe(422);
+      expect(res.body.errores.cert).toMatch(/no del RUC/);
+    });
+    it('con su contraseña se convierte a PEM, se guarda y la contraseña no queda en la auditoria', async () => {
+      const res = await put({ buffer: p12(await ruc()), name: 'certificado.p12' }, { cert_password: PASS });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.certificado.vence_en).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(res.body.company.certificado_configurado).toBe(true);
+      const row = await Company.findByPk(company.id_company);
+      expect(row.cert_path).toMatch(/\.pem$/);
+      const pem = fs.readFileSync(row.cert_path, 'utf8');
+      expect(pem).toMatch(/-----BEGIN RSA PRIVATE KEY-----/);
+      expect(pem).toMatch(/-----BEGIN CERTIFICATE-----/);
+      expect(fs.readdirSync(CERT_DIR).filter(f => /\.(p12|pfx)$/i.test(f))).toHaveLength(0);
+      await wait(300);
+      const logs = await AuditLog.findAll({ where: { tabla: 'empresas' } });
+      expect(logs.length).toBeGreaterThan(0);
+      expect(JSON.stringify(logs)).not.toContain(PASS);
+    });
+    it('un PEM cuya clave no corresponde al certificado se rechaza', async () => {
+      const other = forge.pki.rsa.generateKeyPair(1024);
+      const pem = forge.pki.privateKeyToPem(other.privateKey) + forge.pki.certificateToPem(makeCert(await ruc()));
+      const res = await put({ buffer: Buffer.from(pem), name: 'certificado.pem' });
+      expect(res.statusCode).toBe(422);
+      expect(res.body.errores.cert).toMatch(/no corresponde/);
+    });
+  });
+
   describe('modo pruebas manual', () => {
     const url = '/api/companies/settings/sunat-mode';
     it('exige escribir la palabra de confirmacion y solo rol 1', async () => {

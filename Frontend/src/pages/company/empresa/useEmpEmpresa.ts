@@ -7,11 +7,11 @@ export type EmpLoad = "load" | "ok" | "error" | "forbidden"
 export interface EmpSaved { avisos: string[]; vence: string | null; at: string; created: boolean }
 
 const LOGO_OK = /\.(jpe?g|png|webp)$/i
-const CERT_OK = /\.(pem|txt|crt|cer|cert)$/i
-const CERT_MIMES = ["application/x-pem-file", "text/plain", "application/x-x509-ca-cert"]
+const CERT_OK = /\.(pem|txt|crt|cer|cert|p12|pfx)$/i
+const CERT_MIMES = ["application/x-pem-file", "text/plain", "application/x-x509-ca-cert", "application/x-pkcs12"]
 
-/** Windows no registra MIME para .pem (llega vacio u octet-stream) y el backend filtra por MIME: se fija uno aceptado. */
-const certWithMime = (f: File) => (CERT_MIMES.includes(f.type) ? f : new File([f], f.name, { type: "application/x-pem-file", lastModified: f.lastModified }))
+/** Windows no registra MIME para .pem/.p12 (llega vacio u octet-stream): se fija uno, por servidores que aun filtren por MIME. */
+const certWithMime = (f: File) => (CERT_MIMES.includes(f.type) ? f : new File([f], f.name, { type: /\.(p12|pfx)$/i.test(f.name) ? "application/x-pkcs12" : "application/x-pem-file", lastModified: f.lastModified }))
 
 /** Mensaje persistente del rechazo de un archivo (logo o certificado), antes de enviarlo. */
 export function fileProblem(kind: "logo" | "cert", f: File): string | null {
@@ -21,7 +21,7 @@ export function fileProblem(kind: "logo" | "cert", f: File): string | null {
     if (f.size > MAX_LOGO) return `«${f.name}» no se subió: pesa ${fmtKb(f.size)} y el máximo es 2 MB.`
     return null
   }
-  if (!CERT_OK.test(f.name)) return `«${f.name}» no se subió: usa un archivo .pem, .txt, .crt, .cer o .cert.`
+  if (!CERT_OK.test(f.name)) return `«${f.name}» no se subió: usa el .p12 / .pfx de SUNAT o un archivo .pem, .txt, .crt, .cer o .cert.`
   if (f.size > MAX_CERT) return `«${f.name}» no se subió: pesa ${fmtKb(f.size)} y el máximo es 256 KB.`
   return null
 }
@@ -74,6 +74,8 @@ export function useEmpEmpresa(onDirty?: (n: number) => void) {
   }, [])
 
   const pick = useCallback((kind: "logo" | "cert", f: File | null) => {
+    // La contrasena pertenece al archivo elegido: se borra al quitarlo o cambiarlo.
+    if (kind === "cert") set("cert_password", "")
     if (!f) { set(kind, null); setFileErr(e => ({ ...e, [kind]: undefined })); return }
     const p = fileProblem(kind, f)
     setFileErr(e => ({ ...e, [kind]: p ?? undefined }))
