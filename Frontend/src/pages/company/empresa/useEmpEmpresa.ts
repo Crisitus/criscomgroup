@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { apiFailure, createCompany, fetchCompany, updateCompany, type ApiFailure, type Company } from "../../../services/companyService"
-import { buildBody, changedFields, draftFrom, EMPTY_DRAFT, sectionFlags, validate, type EmpDraft, type EmpErrors, type EmpField } from "./empForm"
+import { buildBody, changedFields, draftFrom, EMPTY_DRAFT, validate, type EmpDraft, type EmpErrors, type EmpField } from "./empForm"
 import { fmtKb, MAX_CERT, MAX_LOGO, nowLimaStamp } from "./empFormat"
 
 export type EmpLoad = "load" | "ok" | "error" | "forbidden"
@@ -63,7 +63,6 @@ export function useEmpEmpresa(onDirty?: (n: number) => void) {
     for (const src of [fileErr, server]) for (const k of Object.keys(src) as EmpField[]) if (src[k]) out[k] = src[k]
     return out
   }, [clientErrs, fileErr, server])
-  const flags = useMemo(() => sectionFlags(changed, errs), [changed, errs])
   useEffect(() => { onDirty?.(changed.length) }, [changed.length, onDirty])
 
   const set = useCallback(<K extends keyof EmpDraft>(k: K, v: EmpDraft[K]) => {
@@ -114,5 +113,5 @@ export function useEmpEmpresa(onDirty?: (n: number) => void) {
   }, [draft, base, fileErr, load])
 
   const alta = !base && creating
-  return { company, status, failure, creating, alta, draft, set, pick, changed, errs, flags, tried, msg, c409, saving, saved, vence, load, discard, startCreate, cancelCreate, submit, dismissSaved: () => setSaved(null) }
+  return { company, status, failure, creating, alta, draft, set, pick, changed, errs, tried, msg, c409, saving, saved, vence, load, discard, startCreate, cancelCreate, submit, dismissSaved: () => setSaved(null) }
 }

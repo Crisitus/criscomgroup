@@ -168,7 +168,7 @@ const documentCount = async idCompany => {
   return docs + ventas;
 };
 
-const publicShape = company => ({ id_company: company.id_company, razon_social: company.razon_social, ruc: company.ruc, tipo_ruc: company.tipo_ruc, direccion: company.direccion, logo_url: company.logo_url });
+const publicShape = company => ({ id_company: company.id_company, razon_social: company.razon_social, ruc: company.ruc, tipo_ruc: company.tipo_ruc, direccion: company.direccion, logo_url: company.logo_url, mostrar_en_web: company.mostrar_en_web });
 const serializeFor = (company, role) => (role === 1 ? company.toJSON() : publicShape(company));
 const ORDER = [['emisor_predeterminado', 'DESC'], ['id_company', 'ASC']];
 
@@ -249,6 +249,21 @@ const updateCompany = (partialUpdate) => safe(async (req, res) => {
 const updateCompanyPut = updateCompany(false);
 const updateCompanyPatch = updateCompany(true);
 
+// Cual empresa muestra su razon social/RUC/direccion en la web publica: una a la vez.
+// Se maneja aparte del PATCH general (que ademas valida certificado SUNAT) para que elegirla
+// no dependa de volver a enviar sol_user/sol_pass/cert.
+const setPublicCompany = safe(async (req, res) => {
+  const company = await Company.findByPk(req.params.id);
+  if (!company) return fail(res, 404, 'Empresa no encontrada');
+  const mostrar = flag(req.body?.mostrar_en_web);
+  await Company.sequelize.transaction(async (transaction) => {
+    if (mostrar) await Company.update({ mostrar_en_web: false }, { where: {}, transaction });
+    await company.update({ mostrar_en_web: mostrar }, { transaction });
+  });
+  await company.reload();
+  return res.status(200).json({ message: 'Visibilidad pública actualizada', company });
+}, 'mostrar-en-web');
+
 const deleteCompanyByRuc = safe(async (req, res) => {
   const company = await Company.findOne({ where: { ruc: req.params.ruc } });
   if (!company) return fail(res, 404, 'Empresa no encontrada');
@@ -260,4 +275,4 @@ const deleteCompanyByRuc = safe(async (req, res) => {
   return res.status(200).json({ message: 'Empresa eliminada correctamente' });
 }, 'eliminar');
 
-module.exports = { createCompany, updateCompanyPatch, updateCompanyPut, getCompanies, getCompanyByRuc, deleteCompanyByRuc, getCompanyForSales, fail, safe, redactBody, ORDER };
+module.exports = { createCompany, updateCompanyPatch, updateCompanyPut, getCompanies, getCompanyByRuc, deleteCompanyByRuc, getCompanyForSales, setPublicCompany, fail, safe, redactBody, ORDER };

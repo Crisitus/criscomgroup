@@ -77,6 +77,7 @@ exports.emit = async (req, res) => {
     if (sale.affiliate_business_id && sale.metodo_pago !== 'tarjeta') {
       throw new Error('Las ventas propias del afiliado no usan el emisor SUNAT de CRISCOM; solo las cobradas con tarjeta por Culqi se facturan con este RUC');
     }
+    if (sale.orden_servicio_id && sale.categoria_ingreso !== 'productos_taller') throw new Error('Esta orden requiere revisión fiscal: no se emitirá mano de obra como venta de productos');
     if (!['1', '3'].includes(sale.tipo_documento)) throw new Error('Las notas de venta no se envían a SUNAT');
     if (sale.comprobante_emitido) throw new Error('El comprobante ya fue emitido');
     const company = await selectEmitter(req, transaction);

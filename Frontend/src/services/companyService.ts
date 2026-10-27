@@ -8,6 +8,8 @@ export interface Company {
   tipo_ruc?: '10' | '20'
   direccion: string
   logo_url: string | null
+  // Si esta empresa es la que muestra su razon social/RUC/direccion en la web publica (una a la vez).
+  mostrar_en_web?: boolean
   client_id?: string | null
   // Los secretos (usuario/clave SOL, certificado, client_secret) nunca llegan al navegador: solo estas marcas.
   sol_configurado?: boolean
@@ -91,6 +93,17 @@ export const fetchCompany = async (): Promise<Company | null> => {
 export const fetchCompanyByRuc = async (ruc: string): Promise<Company> => {
   const response = await api.get(`/companies/${ruc}`)
   return response.data.data
+}
+
+// Todas las empresas registradas (para elegir cual se muestra en la web publica).
+export const fetchCompanies = async (): Promise<Company[]> => {
+  const response = await api.get('/companies')
+  return Array.isArray(response.data) ? response.data : []
+}
+
+export const setCompanyMostrarEnWeb = async (id: number, mostrar: boolean): Promise<Company> => {
+  const response = await api.patch(`/companies/${id}/mostrar-en-web`, { mostrar_en_web: mostrar })
+  return response.data.company
 }
 
 export const createCompany = async (formData: FormData): Promise<SaveCompanyResult> => {

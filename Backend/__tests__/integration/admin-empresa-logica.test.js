@@ -80,7 +80,7 @@ describe('Administracion - Empresa, SUNAT y pagos (logica)', () => {
     it('roles 2 y 3 reciben solo la forma publica', async () => {
       const res = await as('vendedor', request(app).get('/api/companies'));
       expect(res.statusCode).toBe(200);
-      expect(Object.keys(res.body[0]).sort()).toEqual(['direccion', 'id_company', 'logo_url', 'razon_social', 'ruc', 'tipo_ruc']);
+      expect(Object.keys(res.body[0]).sort()).toEqual(['direccion', 'id_company', 'logo_url', 'mostrar_en_web', 'razon_social', 'ruc', 'tipo_ruc']);
     });
     it('PUT sin secretos conserva sol_user, sol_pass y client_secret', async () => {
       const res = await as('gerente', request(app).put(`/api/companies/${company.id_company}`))

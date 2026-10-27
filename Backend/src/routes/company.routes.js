@@ -15,7 +15,7 @@ const upload = require('../middlewares/upload.middleware');
 const { RUC_DIR, markerFor, readSheet } = require('../services/ruc-sheet.service');
 const {
   createCompany, updateCompanyPatch, updateCompanyPut, getCompanies, getCompanyByRuc,
-  deleteCompanyByRuc, getCompanyForSales, fail, safe, ORDER,
+  deleteCompanyByRuc, getCompanyForSales, setPublicCompany, fail, safe, ORDER,
 } = require('../controllers/company.controller');
 
 const SHEET_MIMES = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -196,6 +196,7 @@ router.get('/:ruc', verificarRolesSinHorario([1, 2, 3]), getCompanyByRuc);
 router.post('/', verificarRolesSinHorario([1]), companyFiles, registrarAuditoria('crear', 'empresas'), createCompany);
 router.put('/:id', verificarRolesSinHorario([1]), companyFiles, capturarEstadoOriginal(Company), registrarAuditoria('actualizar', 'empresas'), updateCompanyPut);
 router.patch('/:id', verificarRolesSinHorario([1]), companyFiles, capturarEstadoOriginal(Company), registrarAuditoria('actualizar', 'empresas'), updateCompanyPatch);
+router.patch('/:id/mostrar-en-web', verificarRolesSinHorario([1]), capturarEstadoOriginal(Company), registrarAuditoria('actualizar', 'empresas'), setPublicCompany);
 router.delete('/:ruc', verificarRolesSinHorario([1]), registrarAuditoria('eliminar', 'empresas'), deleteCompanyByRuc);
 
 module.exports = router;

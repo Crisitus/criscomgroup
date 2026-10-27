@@ -21,8 +21,6 @@ export type EmpField = "razon_social" | "ruc" | "direccion" | "client_id" | "sol
 
 /** Certificado PKCS#12 (.p12/.pfx): necesita contrasena para abrirse. */
 export const isPkcs12 = (f: File | null) => !!f && /\.(p12|pfx)$/i.test(f.name)
-export type EmpSec = "ident" | "logo" | "ficha" | "sol" | "cert" | "api" | "modo"
-export type EmpFlag = "err" | "chg"
 
 export const EMPTY_DRAFT: EmpDraft = {
   razon_social: "", ruc: "", direccion: "", client_id: "", sol_user: "", sol_pass: "", client_secret: "", logo: null, cert: null, cert_password: "", rucDemo: false,
@@ -32,9 +30,6 @@ export const draftFrom = (c: Company | null): EmpDraft => c
   ? { ...EMPTY_DRAFT, razon_social: c.razon_social, ruc: c.ruc, direccion: c.direccion, client_id: c.client_id ?? "" }
   : EMPTY_DRAFT
 
-export const FIELD_SEC: Record<EmpField, EmpSec> = {
-  razon_social: "ident", ruc: "ident", direccion: "ident", logo: "logo", sol_user: "sol", sol_pass: "sol", cert: "cert", cert_password: "cert", client_id: "api", client_secret: "api",
-}
 const NAMES: Record<EmpField, string> = {
   razon_social: "Razón social", ruc: "RUC", direccion: "Dirección", client_id: "Client ID", sol_user: "Usuario SOL", sol_pass: "Clave SOL",
   client_secret: "Client secret", logo: "Logo", cert: "Certificado", cert_password: "Contraseña del certificado",
@@ -100,16 +95,3 @@ export function buildBody(d: EmpDraft): FormData {
   if (isPkcs12(d.cert) && d.cert_password) f.append("cert_password", d.cert_password)
   return f
 }
-
-/** Banderas por seccion para el menu lateral. */
-export function sectionFlags(changed: EmpField[], errs: EmpErrors): Partial<Record<EmpSec, EmpFlag>> {
-  const out: Partial<Record<EmpSec, EmpFlag>> = {}
-  changed.forEach(f => { out[FIELD_SEC[f]] = "chg" })
-  ;(Object.keys(errs) as EmpField[]).forEach(f => { if (errs[f]) out[FIELD_SEC[f]] = "err" })
-  return out
-}
-
-/** Orden del flujo: datos y credenciales; la ficha RUC (con la empresa registrada y su certificado); y el modo SUNAT resultante. */
-export const EMP_SECS: [EmpSec, string][] = [
-  ["ident", "Identidad fiscal"], ["logo", "Logo"], ["sol", "Acceso SOL"], ["cert", "Certificado digital"], ["api", "API SUNAT"], ["ficha", "Ficha RUC"], ["modo", "Modo SUNAT"],
-]

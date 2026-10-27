@@ -40,6 +40,9 @@ const Company = sequelize.define('Company', {
     horario_inicio: { type: DataTypes.STRING(5), allowNull: false, defaultValue: '08:50' },
     horario_fin: { type: DataTypes.STRING(5), allowNull: false, defaultValue: '21:15' },
     horario_restriccion_activa: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    // Cual empresa (de las que tengan RUC registrado) muestra su razon social/RUC/direccion
+    // en la web publica. Solo una a la vez; se controla desde Redes y banners.
+    mostrar_en_web: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     sol_user: {
         type: DataTypes.STRING(50),
         allowNull: false
